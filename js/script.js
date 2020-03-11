@@ -1,6 +1,6 @@
 var apexOracleOSMMaps = (function () {
     "use strict";
-    var scriptVersion = "1.0";
+    var scriptVersion = "1.1";
     var util = {
         version: "1.2.7",
         isDefinedAndNotNull: function (pInput) {
@@ -253,30 +253,60 @@ var apexOracleOSMMaps = (function () {
                         $.each(pData.row, function (idx, data) {
                             if (idx === 0) {
                                 if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
-                                    long = data.MAP_LONGITUDE;
+                                    if (isNaN(data.MAP_LONGITUDE)) {
+                                        util.debug.error("MAP_LONGITUDE is not a number");
+                                        util.debug.error([data.MAP_LONGITUDE]);
+                                    } else {
+                                        long = data.MAP_LONGITUDE;
+                                    }
                                 }
                                 if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
-                                    lat = data.MAP_LATITUDE;
+                                    if (isNaN(data.MAP_LATITUDE)) {
+                                        util.debug.error("MAP_LATITUDE is not a number");
+                                        util.debug.error([data.MAP_LATITUDE]);
+                                    } else {
+                                        lat = data.MAP_LATITUDE;
+                                    }
                                 }
                                 if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
-                                    zoom = data.MAP_ZOOM;
+                                    if (isNaN(data.MAP_ZOOM)) {
+                                        util.debug.error("MAP_ZOOM is not a number");
+                                        util.debug.error([data.MAP_ZOOM]);
+                                    } else {
+                                        zoom = data.MAP_ZOOM;
+                                    }
                                 }
                             }
-                            var point = new OM.geometry.Point(data.MARKER_LONGITUDE, data.MARKER_LATITUDE);
-                            var feature = new OM.Feature(data.MARKER_LABEL || idx, point, {
-                                label: data.MARKER_LABEL.toString(),
-                                renderingStyle: new OM.style.Marker({
-                                    src: data.MARKER_URL || configJSON.marker.url,
-                                    width: data.MARKER_WIDTH || configJSON.marker.width,
-                                    height: data.MARKER_HEIGHT || configJSON.marker.height
-                                })
-                            });
-                            layerVec.addFeature(feature);
+                            var label;
+                            if (util.isDefinedAndNotNull(data.MARKER_LABEL)) {
+                                label = data.MARKER_LABEL.toString();
+                            }
 
-                            if (util.isDefinedAndNotNull(data.MARKER_LINK)) {
-                                feature.addListener("click", function () {
-                                    util.link(data.MARKER_LINK);
-                                });
+                            if (isNaN(data.MARKER_LATITUDE)) {
+                                util.debug.error("MARKER_LATITUDE is not a number");
+                                util.debug.error([data.MARKER_LATITUDE]);
+                            } else {
+                                if (isNaN(data.MARKER_LONGITUDE)) {
+                                    util.debug.error("MARKER_LONGITUDE is not a number");
+                                    util.debug.error([data.MARKER_LONGITUDE]);
+                                } else {
+                                    var point = new OM.geometry.Point(data.MARKER_LONGITUDE, data.MARKER_LATITUDE);
+                                    var feature = new OM.Feature(data.MARKER_LABEL || idx, point, {
+                                        label: label,
+                                        renderingStyle: new OM.style.Marker({
+                                            src: data.MARKER_URL || configJSON.marker.url,
+                                            width: data.MARKER_WIDTH || configJSON.marker.width,
+                                            height: data.MARKER_HEIGHT || configJSON.marker.height
+                                        })
+                                    });
+                                    layerVec.addFeature(feature);
+
+                                    if (util.isDefinedAndNotNull(data.MARKER_LINK)) {
+                                        feature.addListener("click", function () {
+                                            util.link(data.MARKER_LINK);
+                                        });
+                                    }
+                                }
                             }
                         });
                     }
@@ -314,7 +344,9 @@ var apexOracleOSMMaps = (function () {
 
                         var feature = new OpenLayers.Feature(layer, ll);
                         var marker = new OpenLayers.Marker(ll, icon);
-                        marker.icon.imageDiv.title = title;
+                        if (util.isDefinedAndNotNull(title)) {
+                            marker.icon.imageDiv.title = title;
+                        }
                         marker.feature = feature;
 
                         layer.addMarker(marker);
@@ -341,13 +373,28 @@ var apexOracleOSMMaps = (function () {
                         $.each(pData.row, function (idx, data) {
                             if (idx === 0) {
                                 if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
-                                    long = data.MAP_LONGITUDE;
+                                    if (isNaN(data.MAP_LONGITUDE)) {
+                                        util.debug.error("MAP_LONGITUDE is not a number");
+                                        util.debug.error([data.MAP_LONGITUDE]);
+                                    } else {
+                                        long = data.MAP_LONGITUDE;
+                                    }
                                 }
                                 if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
-                                    lat = data.MAP_LATITUDE;
+                                    if (isNaN(data.MAP_LATITUDE)) {
+                                        util.debug.error("MAP_LATITUDE is not a number");
+                                        util.debug.error([data.MAP_LATITUDE]);
+                                    } else {
+                                        lat = data.MAP_LATITUDE;
+                                    }
                                 }
                                 if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
-                                    zoom = data.MAP_ZOOM;
+                                    if (isNaN(data.MAP_ZOOM)) {
+                                        util.debug.error("MAP_ZOOM is not a number");
+                                        util.debug.error([data.MAP_ZOOM]);
+                                    } else {
+                                        zoom = data.MAP_ZOOM;
+                                    }
                                 }
                             }
 
@@ -357,16 +404,26 @@ var apexOracleOSMMaps = (function () {
                                 displayInLayerSwitcher: false
                             });
 
-                            addMarker(
-                                layer_markers,
-                                data.MARKER_LONGITUDE,
-                                data.MARKER_LATITUDE,
-                                data.MARKER_URL,
-                                data.MARKER_WIDTH,
-                                data.MARKER_HEIGHT,
-                                data.MARKER_LINK,
-                                data.MARKER_LABEL
-                            );
+                            if (isNaN(data.MARKER_LATITUDE)) {
+                                util.debug.error("MARKER_LATITUDE is not a number");
+                                util.debug.error([data.MARKER_LATITUDE]);
+                            } else {
+                                if (isNaN(data.MARKER_LONGITUDE)) {
+                                    util.debug.error("MARKER_LONGITUDE is not a number");
+                                    util.debug.error([data.MARKER_LONGITUDE]);
+                                } else {
+                                    addMarker(
+                                        layer_markers,
+                                        data.MARKER_LONGITUDE,
+                                        data.MARKER_LATITUDE,
+                                        data.MARKER_URL,
+                                        data.MARKER_WIDTH,
+                                        data.MARKER_HEIGHT,
+                                        data.MARKER_LINK,
+                                        data.MARKER_LABEL
+                                    );
+                                }
+                            }
 
                             map.addLayers([layer_mapnik, layer_markers]);
                         });
@@ -412,7 +469,7 @@ var apexOracleOSMMaps = (function () {
                         error: function (d) {
                             container.empty();
                             console.log(d.responseText);
-                            util.noDataMessage("#" + containerID, 'Error occured!');
+                            util.noDataMessage.show("#" + containerID, 'Error occured!');
                         },
                         dataType: "json"
                     });
