@@ -1,6 +1,6 @@
 {
     "name": "APEX Oracle & OSM Maps",
-    "version": "1.1",
+    "version": "1.2",
     "description": "This plugin is used to draw an Oracle or an OSM Map as APEX Region. Login for Demo is: user-demo / 123456@",
     "keywords": ["oracle", "apex", "maps", "geolocation"],
     "homepage": "https://github.com/RonnyWeiss/APEX-Oracle-and-OSM-Maps",

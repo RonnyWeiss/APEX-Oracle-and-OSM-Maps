@@ -1,6 +1,6 @@
 var apexOracleOSMMaps = (function () {
     "use strict";
-    var scriptVersion = "1.1";
+    var scriptVersion = "1.2";
     var util = {
         version: "1.2.7",
         isDefinedAndNotNull: function (pInput) {
@@ -208,7 +208,8 @@ var apexOracleOSMMaps = (function () {
                 container.empty();
 
                 util.debug.info({
-                    "data": pData
+                    "data": pData,
+                    "configJSON": configJSON
                 });
 
                 var long = configJSON.map.longitude;
@@ -313,7 +314,9 @@ var apexOracleOSMMaps = (function () {
 
                     layerVec.setLabelsVisible(configJSON.marker.labels);
                     map.addLayer(layerMap);
-                    map.addLayer(layerVec);
+                    if (pData.row && pData.row.length > 0) {
+                        map.addLayer(layerVec);
+                    }
                     var center = new OM.geometry.Point(long, lat, sRID);
                     map.setMapCenterAndZoomLevel(center, zoom, true);
 
@@ -424,9 +427,16 @@ var apexOracleOSMMaps = (function () {
                                     );
                                 }
                             }
-
                             map.addLayers([layer_mapnik, layer_markers]);
                         });
+                    } else {
+                        util.debug.info("No SQL Data loaded.");
+                        var layer_markers = new OpenLayers.Layer.Markers("Address", {
+                            projection: new OpenLayers.Projection("EPSG:4326"),
+                            visibility: true,
+                            displayInLayerSwitcher: false
+                        });
+                        map.addLayers([layer_mapnik, layer_markers]);
                     }
 
                     var x = Lon2Merc(long);
