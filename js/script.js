@@ -1,6 +1,6 @@
 var apexOracleOSMMaps = (function () {
     "use strict";
-    var scriptVersion = "1.2";
+    var scriptVersion = "1.2.1";
     var util = {
         version: "1.2.7",
         isDefinedAndNotNull: function (pInput) {
@@ -131,13 +131,6 @@ var apexOracleOSMMaps = (function () {
                 console.error(finalConfig);
             }
             return finalConfig;
-        },
-        getLanguage: function () {
-            if (util.isAPEX()) {
-                return apex.locale.getLanguage();
-            } else {
-                return navigator.language || navigator.userLanguage || en;
-            }
         }
     };
 
@@ -217,233 +210,265 @@ var apexOracleOSMMaps = (function () {
                 var zoom = configJSON.map.zoom;
 
                 if (mapType === 'oracle') {
-                    OM.gv.setResourcePath(baseURL + "/jslib/v2.3/");
-                    OM.gv.setBaseMapViewerURL(baseURL);
-                    OM.Map.setLocale(util.getLanguage());
+                    try {
+                        OM.gv.setResourcePath(baseURL + "/jslib/v2.3/");
+                        OM.gv.setBaseMapViewerURL(baseURL);
+                        OM.Map.setLocale('en');
 
-                    util.debug.info({
-                        "map": OM
-                    });
+                        util.debug.info({
+                            "map": OM
+                        });
 
-                    var sRID = 8307;
+                        var sRID = 8307;
 
-                    var mapUniverse = new OM.universe.Universe({
-                        srid: sRID,
-                        bounds: new OM.geometry.Rectangle(-180, -65, 180, 65, sRID),
-                        numberOfZoomLevels: 5
-                    });
+                        var mapUniverse = new OM.universe.Universe({
+                            srid: sRID,
+                            bounds: new OM.geometry.Rectangle(-180, -65, 180, 65, sRID),
+                            numberOfZoomLevels: 5
+                        });
 
-                    var mapDiv = document.getElementById(containerID);
-                    var mapOptions = {
-                        mapviewerURL: baseURL,
-                        universe: mapUniverse
-                    };
+                        var mapDiv = document.getElementById(containerID);
+                        var mapOptions = {
+                            mapviewerURL: baseURL,
+                            universe: mapUniverse
+                        };
 
-                    var map = new OM.Map(mapDiv, mapOptions);
+                        var map = new OM.Map(mapDiv, mapOptions);
 
-                    var layerMap = new OM.layer.ElocationTileLayer("map");
+                        var layerMap = new OM.layer.ElocationTileLayer("map");
 
-                    var layerOptions = {
-                        def: {
-                            type: OM.layer.VectorLayer.TYPE_LOCAL
-                        }
-                    };
-                    var layerVec = new OM.layer.VectorLayer("vectors", layerOptions);
-
-                    if (pData.row && pData.row.length > 0) {
-                        $.each(pData.row, function (idx, data) {
-                            if (idx === 0) {
-                                if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
-                                    if (isNaN(data.MAP_LONGITUDE)) {
-                                        util.debug.error("MAP_LONGITUDE is not a number");
-                                        util.debug.error([data.MAP_LONGITUDE]);
-                                    } else {
-                                        long = data.MAP_LONGITUDE;
-                                    }
-                                }
-                                if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
-                                    if (isNaN(data.MAP_LATITUDE)) {
-                                        util.debug.error("MAP_LATITUDE is not a number");
-                                        util.debug.error([data.MAP_LATITUDE]);
-                                    } else {
-                                        lat = data.MAP_LATITUDE;
-                                    }
-                                }
-                                if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
-                                    if (isNaN(data.MAP_ZOOM)) {
-                                        util.debug.error("MAP_ZOOM is not a number");
-                                        util.debug.error([data.MAP_ZOOM]);
-                                    } else {
-                                        zoom = data.MAP_ZOOM;
-                                    }
-                                }
+                        var layerOptions = {
+                            def: {
+                                type: OM.layer.VectorLayer.TYPE_LOCAL
                             }
-                            var label;
-                            if (util.isDefinedAndNotNull(data.MARKER_LABEL)) {
-                                label = data.MARKER_LABEL.toString();
-                            }
+                        };
+                        var layerVec = new OM.layer.VectorLayer("vectors", layerOptions);
 
-                            if (isNaN(data.MARKER_LATITUDE)) {
-                                util.debug.error("MARKER_LATITUDE is not a number");
-                                util.debug.error([data.MARKER_LATITUDE]);
-                            } else {
-                                if (isNaN(data.MARKER_LONGITUDE)) {
-                                    util.debug.error("MARKER_LONGITUDE is not a number");
-                                    util.debug.error([data.MARKER_LONGITUDE]);
-                                } else {
-                                    var point = new OM.geometry.Point(data.MARKER_LONGITUDE, data.MARKER_LATITUDE);
-                                    var feature = new OM.Feature(data.MARKER_LABEL || idx, point, {
-                                        label: label,
-                                        renderingStyle: new OM.style.Marker({
-                                            src: data.MARKER_URL || configJSON.marker.url,
-                                            width: data.MARKER_WIDTH || configJSON.marker.width,
-                                            height: data.MARKER_HEIGHT || configJSON.marker.height
-                                        })
-                                    });
-                                    layerVec.addFeature(feature);
-
-                                    if (util.isDefinedAndNotNull(data.MARKER_LINK)) {
-                                        feature.addListener("click", function () {
-                                            util.link(data.MARKER_LINK);
+                        if (pData.row && pData.row.length > 0) {
+                            $.each(pData.row, function (idx, data) {
+                                if (idx === 0) {
+                                    if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
+                                        util.debug.info({
+                                            "MapLongitude_o": data.MAP_LONGITUDE
+                                        });
+                                        long = parseFloat(data.MAP_LONGITUDE.toString().replace(/,/, '.'));
+                                        util.debug.info({
+                                            "MapLongitude": long
+                                        });
+                                    }
+                                    if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
+                                        util.debug.info({
+                                            "MapLatitude_o": data.MAP_LATITUDE
+                                        });
+                                        lat = parseFloat(data.MAP_LATITUDE.toString().replace(/,/, '.'));
+                                        util.debug.info({
+                                            "MapLongitude": lat
+                                        });
+                                    }
+                                    if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
+                                        util.debug.info({
+                                            "MapZoom_o": data.MAP_ZOOM
+                                        });
+                                        zoom = parseFloat(data.MAP_ZOOM.toString().replace(/,/, '.'));
+                                        util.debug.info({
+                                            "MapZoom": zoom
                                         });
                                     }
                                 }
-                            }
-                        });
-                    }
+                                var label;
+                                if (util.isDefinedAndNotNull(data.MARKER_LABEL)) {
+                                    label = data.MARKER_LABEL.toString();
+                                }
+                                if (util.isDefinedAndNotNull(data.MARKER_LATITUDE)) {
+                                    if (util.isDefinedAndNotNull(data.MARKER_LONGITUDE)) {
+                                        util.debug.info({
+                                            "MarkerLongitude_o": data.MARKER_LONGITUDE,
+                                            "MarkerLatitude_o": data.MARKER_LATITUDE
+                                        });
 
-                    layerVec.setLabelsVisible(configJSON.marker.labels);
-                    map.addLayer(layerMap);
-                    if (pData.row && pData.row.length > 0) {
-                        map.addLayer(layerVec);
-                    }
-                    var center = new OM.geometry.Point(long, lat, sRID);
-                    map.setMapCenterAndZoomLevel(center, zoom, true);
+                                        var mLong = parseFloat(data.MARKER_LONGITUDE.toString().replace(/,/, '.'));
+                                        var mLat = parseFloat(data.MARKER_LATITUDE.toString().replace(/,/, '.'));
 
-                    map.init();
-                } else {
-                    var map;
-                    var layer_mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
+                                        util.debug.info({
+                                            "MarkerLongitude": mLong,
+                                            "MarkerLatitude": mLat,
+                                        });
 
-                    function Lon2Merc(lon) {
-                        return 20037508.34 * lon / 180;
-                    }
+                                        var point = new OM.geometry.Point(mLong, mLat);
+                                        var feature = new OM.Feature(data.MARKER_LABEL || idx, point, {
+                                            label: label,
+                                            renderingStyle: new OM.style.Marker({
+                                                src: data.MARKER_URL || configJSON.marker.url,
+                                                width: data.MARKER_WIDTH || configJSON.marker.width,
+                                                height: data.MARKER_HEIGHT || configJSON.marker.height
+                                            })
+                                        });
 
-                    function Lat2Merc(lat) {
-                        var PI = 3.14159265358979323846;
-                        lat = Math.log(Math.tan((90 + lat) * PI / 360)) / (PI / 180);
-                        return 20037508.34 * lat / 180;
-                    }
+                                        layerVec.addFeature(feature);
 
-                    function addMarker(layer, lon, lat, iconUrl, iconWidth, iconHeight, link, title) {
-                        var ll = new OpenLayers.LonLat(Lon2Merc(lon), Lat2Merc(lat));
-
-                        var sizeWidth = iconWidth || configJSON.marker.width;
-                        var sizeHeight = iconHeight || configJSON.marker.height;
-                        var size = new OpenLayers.Size(sizeWidth, sizeHeight);
-                        var offset = new OpenLayers.Pixel(-(size.w / 2), -size.h);
-                        var markerIconUrl = iconUrl || configJSON.marker.url;
-                        var icon = new OpenLayers.Icon(markerIconUrl, size, offset);
-
-                        var feature = new OpenLayers.Feature(layer, ll);
-                        var marker = new OpenLayers.Marker(ll, icon);
-                        if (util.isDefinedAndNotNull(title)) {
-                            marker.icon.imageDiv.title = title;
-                        }
-                        marker.feature = feature;
-
-                        layer.addMarker(marker);
-
-                        if (util.isDefinedAndNotNull(link)) {
-                            marker.events.register('click', layer, function () {
-                                util.link(link);
+                                        if (util.isDefinedAndNotNull(data.MARKER_LINK)) {
+                                            feature.addListener("click", function () {
+                                                util.link(data.MARKER_LINK);
+                                            });
+                                        }
+                                    }
+                                }
                             });
                         }
+
+                        layerVec.setLabelsVisible(configJSON.marker.labels);
+                        map.addLayer(layerMap);
+                        if (pData.row && pData.row.length > 0) {
+                            map.addLayer(layerVec);
+                        }
+                        var center = new OM.geometry.Point(long, lat, sRID);
+                        map.setMapCenterAndZoomLevel(center, zoom, true);
+
+                        map.init();
+                    } catch (e) {
+                        util.debug.error("Erro while try to draw Oracle maps");
+                        util.debug.error(e);
                     }
+                } else {
+                    try {
+                        var map;
+                        var layer_mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
 
-                    OpenLayers.Lang.setCode(util.getLanguage());
+                        function Lon2Merc(lon) {
+                            return 20037508.34 * lon / 180;
+                        }
 
-                    map = new OpenLayers.Map(containerID, {
-                        projection: new OpenLayers.Projection("EPSG:900913"),
-                        displayProjection: new OpenLayers.Projection("EPSG:4326"),
-                        maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-                        numZoomLevels: 18,
-                        maxResolution: 156543,
-                        units: 'meters'
-                    });
+                        function Lat2Merc(lat) {
+                            var PI = 3.14159265358979323846;
+                            lat = Math.log(Math.tan((90 + lat) * PI / 360)) / (PI / 180);
+                            return 20037508.34 * lat / 180;
+                        }
 
-                    if (pData.row && pData.row.length > 0) {
-                        $.each(pData.row, function (idx, data) {
-                            if (idx === 0) {
-                                if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
-                                    if (isNaN(data.MAP_LONGITUDE)) {
-                                        util.debug.error("MAP_LONGITUDE is not a number");
-                                        util.debug.error([data.MAP_LONGITUDE]);
-                                    } else {
-                                        long = data.MAP_LONGITUDE;
-                                    }
-                                }
-                                if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
-                                    if (isNaN(data.MAP_LATITUDE)) {
-                                        util.debug.error("MAP_LATITUDE is not a number");
-                                        util.debug.error([data.MAP_LATITUDE]);
-                                    } else {
-                                        lat = data.MAP_LATITUDE;
-                                    }
-                                }
-                                if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
-                                    if (isNaN(data.MAP_ZOOM)) {
-                                        util.debug.error("MAP_ZOOM is not a number");
-                                        util.debug.error([data.MAP_ZOOM]);
-                                    } else {
-                                        zoom = data.MAP_ZOOM;
-                                    }
-                                }
+                        function addMarker(layer, lon, lat, iconUrl, iconWidth, iconHeight, link, title) {
+                            var ll = new OpenLayers.LonLat(Lon2Merc(lon), Lat2Merc(lat));
+
+                            var sizeWidth = iconWidth || configJSON.marker.width;
+                            var sizeHeight = iconHeight || configJSON.marker.height;
+                            var size = new OpenLayers.Size(sizeWidth, sizeHeight);
+                            var offset = new OpenLayers.Pixel(-(size.w / 2), -size.h);
+                            var markerIconUrl = iconUrl || configJSON.marker.url;
+                            var icon = new OpenLayers.Icon(markerIconUrl, size, offset);
+
+                            var feature = new OpenLayers.Feature(layer, ll);
+                            var marker = new OpenLayers.Marker(ll, icon);
+                            if (util.isDefinedAndNotNull(title)) {
+                                marker.icon.imageDiv.title = title;
                             }
+                            marker.feature = feature;
 
+                            layer.addMarker(marker);
+
+                            if (util.isDefinedAndNotNull(link)) {
+                                marker.events.register('click', layer, function () {
+                                    util.link(link);
+                                });
+                            }
+                        }
+
+                        OpenLayers.Lang.setCode('en');
+
+                        map = new OpenLayers.Map(containerID, {
+                            projection: new OpenLayers.Projection("EPSG:900913"),
+                            displayProjection: new OpenLayers.Projection("EPSG:4326"),
+                            maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
+                            numZoomLevels: 18,
+                            maxResolution: 156543,
+                            units: 'meters'
+                        });
+
+                        if (pData.row && pData.row.length > 0) {
+                            $.each(pData.row, function (idx, data) {
+                                if (idx === 0) {
+                                    if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
+                                        util.debug.info({
+                                            "MapLongitude_o": data.MAP_LONGITUDE
+                                        });
+                                        long = parseFloat(data.MAP_LONGITUDE.toString().replace(/,/, '.'));
+                                        util.debug.info({
+                                            "MapLongitude": long
+                                        });
+                                    }
+                                    if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
+                                        util.debug.info({
+                                            "MapLatitude_o": data.MAP_LATITUDE
+                                        });
+                                        lat = parseFloat(data.MAP_LATITUDE.toString().replace(/,/, '.'));
+                                        util.debug.info({
+                                            "MapLongitude": lat
+                                        });
+                                    }
+                                    if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
+                                        util.debug.info({
+                                            "MapZoom_o": data.MAP_ZOOM
+                                        });
+                                        zoom = parseFloat(data.MAP_ZOOM.toString().replace(/,/, '.'));
+                                        util.debug.info({
+                                            "MapZoom": zoom
+                                        });
+                                    }
+                                }
+
+                                var layer_markers = new OpenLayers.Layer.Markers("Address", {
+                                    projection: new OpenLayers.Projection("EPSG:4326"),
+                                    visibility: true,
+                                    displayInLayerSwitcher: false
+                                });
+
+                                if (util.isDefinedAndNotNull(data.MARKER_LATITUDE)) {
+                                    if (util.isDefinedAndNotNull(data.MARKER_LONGITUDE)) {
+
+                                        util.debug.info({
+                                            "MarkerLongitude_o": data.MARKER_LONGITUDE,
+                                            "MarkerLatitude_o": data.MARKER_LATITUDE
+                                        });
+
+                                        var mLong = parseFloat(data.MARKER_LONGITUDE.toString().replace(/,/, '.'));
+                                        var mLat = parseFloat(data.MARKER_LATITUDE.toString().replace(/,/, '.'));
+
+                                        util.debug.info({
+                                            "MarkerLongitude": mLong,
+                                            "MarkerLatitude": mLat,
+                                        });
+
+                                        addMarker(
+                                            layer_markers,
+                                            mLong,
+                                            mLat,
+                                            data.MARKER_URL,
+                                            data.MARKER_WIDTH,
+                                            data.MARKER_HEIGHT,
+                                            data.MARKER_LINK,
+                                            data.MARKER_LABEL
+                                        );
+                                    }
+                                }
+
+                                map.addLayers([layer_mapnik, layer_markers]);
+                            });
+                        } else {
+                            util.debug.info("No SQL Data loaded.");
                             var layer_markers = new OpenLayers.Layer.Markers("Address", {
                                 projection: new OpenLayers.Projection("EPSG:4326"),
                                 visibility: true,
                                 displayInLayerSwitcher: false
                             });
-
-                            if (isNaN(data.MARKER_LATITUDE)) {
-                                util.debug.error("MARKER_LATITUDE is not a number");
-                                util.debug.error([data.MARKER_LATITUDE]);
-                            } else {
-                                if (isNaN(data.MARKER_LONGITUDE)) {
-                                    util.debug.error("MARKER_LONGITUDE is not a number");
-                                    util.debug.error([data.MARKER_LONGITUDE]);
-                                } else {
-                                    addMarker(
-                                        layer_markers,
-                                        data.MARKER_LONGITUDE,
-                                        data.MARKER_LATITUDE,
-                                        data.MARKER_URL,
-                                        data.MARKER_WIDTH,
-                                        data.MARKER_HEIGHT,
-                                        data.MARKER_LINK,
-                                        data.MARKER_LABEL
-                                    );
-                                }
-                            }
                             map.addLayers([layer_mapnik, layer_markers]);
-                        });
-                    } else {
-                        util.debug.info("No SQL Data loaded.");
-                        var layer_markers = new OpenLayers.Layer.Markers("Address", {
-                            projection: new OpenLayers.Projection("EPSG:4326"),
-                            visibility: true,
-                            displayInLayerSwitcher: false
-                        });
-                        map.addLayers([layer_mapnik, layer_markers]);
+                        }
+
+                        var x = Lon2Merc(long);
+                        var y = Lat2Merc(lat);
+                        map.setCenter(new OpenLayers.LonLat(x, y), (zoom + 1));
+
+                        container.find(".olControlAttribution").css("bottom", "5px");
+                    } catch (e) {
+                        util.debug.error("Erro while try to draw OpenStreetMaps");
+                        util.debug.error(e);
                     }
-
-                    var x = Lon2Merc(long);
-                    var y = Lat2Merc(lat);
-                    map.setCenter(new OpenLayers.LonLat(x, y), (zoom + 1));
-
-                    container.find(".olControlAttribution").css("bottom", "5px");
                 }
             }
 
