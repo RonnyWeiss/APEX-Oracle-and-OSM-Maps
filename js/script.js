@@ -247,7 +247,7 @@ var apexOracleOSMMaps = (function () {
                         if (pData.row && pData.row.length > 0) {
                             $.each(pData.row, function (idx, data) {
                                 if (idx === 0) {
-                                    if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
+                                    if (util.isDefinedAndNotNull(data.MAP_LONGITUDE) && data.MAP_LONGITUDE != "") {
                                         util.debug.info({
                                             "MapLongitude_o": data.MAP_LONGITUDE
                                         });
@@ -256,7 +256,7 @@ var apexOracleOSMMaps = (function () {
                                             "MapLongitude": long
                                         });
                                     }
-                                    if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
+                                    if (util.isDefinedAndNotNull(data.MAP_LATITUDE) && data.MAP_LATITUDE != "") {
                                         util.debug.info({
                                             "MapLatitude_o": data.MAP_LATITUDE
                                         });
@@ -265,7 +265,7 @@ var apexOracleOSMMaps = (function () {
                                             "MapLongitude": lat
                                         });
                                     }
-                                    if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
+                                    if (util.isDefinedAndNotNull(data.MAP_ZOOM) && data.MAP_ZOOM != "") {
                                         util.debug.info({
                                             "MapZoom_o": data.MAP_ZOOM
                                         });
@@ -279,8 +279,8 @@ var apexOracleOSMMaps = (function () {
                                 if (util.isDefinedAndNotNull(data.MARKER_LABEL)) {
                                     label = data.MARKER_LABEL.toString();
                                 }
-                                if (util.isDefinedAndNotNull(data.MARKER_LATITUDE)) {
-                                    if (util.isDefinedAndNotNull(data.MARKER_LONGITUDE)) {
+                                if (util.isDefinedAndNotNull(data.MARKER_LATITUDE) && data.MARKER_LATITUDE != "") {
+                                    if (util.isDefinedAndNotNull(data.MARKER_LONGITUDE) && data.MARKER_LONGITUDE != "") {
                                         util.debug.info({
                                             "MarkerLongitude_o": data.MARKER_LONGITUDE,
                                             "MarkerLatitude_o": data.MARKER_LATITUDE
@@ -384,7 +384,7 @@ var apexOracleOSMMaps = (function () {
                         if (pData.row && pData.row.length > 0) {
                             $.each(pData.row, function (idx, data) {
                                 if (idx === 0) {
-                                    if (util.isDefinedAndNotNull(data.MAP_LONGITUDE)) {
+                                    if (util.isDefinedAndNotNull(data.MAP_LONGITUDE) && data.MAP_LONGITUDE != "") {
                                         util.debug.info({
                                             "MapLongitude_o": data.MAP_LONGITUDE
                                         });
@@ -393,7 +393,7 @@ var apexOracleOSMMaps = (function () {
                                             "MapLongitude": long
                                         });
                                     }
-                                    if (util.isDefinedAndNotNull(data.MAP_LATITUDE)) {
+                                    if (util.isDefinedAndNotNull(data.MAP_LATITUDE) && data.MAP_LATITUDE != "") {
                                         util.debug.info({
                                             "MapLatitude_o": data.MAP_LATITUDE
                                         });
@@ -402,7 +402,7 @@ var apexOracleOSMMaps = (function () {
                                             "MapLongitude": lat
                                         });
                                     }
-                                    if (util.isDefinedAndNotNull(data.MAP_ZOOM)) {
+                                    if (util.isDefinedAndNotNull(data.MAP_ZOOM) && data.MAP_ZOOM != "") {
                                         util.debug.info({
                                             "MapZoom_o": data.MAP_ZOOM
                                         });
@@ -419,8 +419,8 @@ var apexOracleOSMMaps = (function () {
                                     displayInLayerSwitcher: false
                                 });
 
-                                if (util.isDefinedAndNotNull(data.MARKER_LATITUDE)) {
-                                    if (util.isDefinedAndNotNull(data.MARKER_LONGITUDE)) {
+                                if (util.isDefinedAndNotNull(data.MARKER_LATITUDE) && data.MARKER_LATITUDE != "") {
+                                    if (util.isDefinedAndNotNull(data.MARKER_LONGITUDE) && data.MARKER_LONGITUDE != "") {
 
                                         util.debug.info({
                                             "MarkerLongitude_o": data.MARKER_LONGITUDE,
