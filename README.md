@@ -6,7 +6,7 @@ This plugin is used to draw an Oracle or an OSM Map as APEX Region.
 
 For working Demo just click on:
 
-https://APEX.oracle.com/pls/APEX/f?p=103428
+https://apex.oracle.com/pls/apex/f?p=103428
 
 If you like my stuff, donate me a coffee
 
