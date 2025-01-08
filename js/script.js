@@ -332,8 +332,10 @@ var apexOracleOSMMaps = (function () {
                 } else {
                     try {
                         var map;
-                        var layer_mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
-
+                        var layer_mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik", {
+                            attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Copyright'
+                        });
+                        
                         function Lon2Merc(lon) {
                             return 20037508.34 * lon / 180;
                         }
